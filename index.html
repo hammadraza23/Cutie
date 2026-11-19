@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Little World For Nimra</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --gold: #d8b779;
+  --cream: #f1dfc0;
+  --wine: #60283c;
+  --bg: #100c10;
+  --muted: #c7b5b2;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 15% 15%, #642b423d, transparent 45%),
+    radial-gradient(ellipse at 85% 85%, #a17b3a20, transparent 45%),
+    #100c10;
+  color: white;
+  font-family: Poppins, sans-serif;
+  overflow-x: hidden;
+}
+
+#stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  color: var(--gold);
+  opacity: .35;
+  animation: float 7s ease-in-out infinite;
+}
+
+@keyframes float {
+  50% { transform: translateY(-28px); opacity: .7; }
+}
+
+.page {
+  min-height: 100vh;
+  padding: 30px 16px 45px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.page.active {
+  display: flex;
+  animation: appear .7s ease;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  width: 100%;
+  max-width: 650px;
+  padding: 36px 25px;
+  text-align: center;
+  border: 1px solid #d8b77955;
+  border-radius: 22px;
+  background: linear-gradient(145deg,#ffffff0b,#ffffff03);
+  box-shadow: 0 15px 55px #0008;
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+.card:before,
+.card:after {
+  content: "✦";
+  position: absolute;
+  color: var(--gold);
+  font-size: 17px;
+}
+
+.card:before { top: 12px; left: 14px; }
+.card:after { bottom: 12px; right: 14px; }
+
+.kicker {
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(38px,9vw,60px);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: 1.3;
+}
+
+h2 {
+  font-family: "Playfair Display", serif;
+  color: var(--gold);
+  font-weight: 400;
+  font-size: clamp(27px,6vw,38px);
+  margin-bottom: 20px;
+}
+
+.gold { color: var(--gold); }
+
+.urdu {
+  font-family: "Noto Nastaliq Urdu", serif;
+  direction: rtl;
+  text-align: center;
+  font-size: 17px;
+  line-height: 2.5;
+  color: #eee2df;
+  margin: 17px 0;
+}
+
+.urdu.small {
+  font-size: 15px;
+}
+
+.english {
+  font-family: "Playfair Display", serif;
+  font-size: 17px;
+  line-height: 1.9;
+  color: #e1cba9;
+  font-style: italic;
+}
+
+.divider {
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin: 25px auto;
+}
+
+.ornament {
+  color: var(--gold);
+  letter-spacing: 8px;
+  margin: 20px 0;
+}
+
+.photo {
+  width: min(100%, 340px);
+  margin: 23px auto;
+  padding: 7px;
+  border: 1px solid var(--gold);
+  border-radius: 17px;
+  background: linear-gradient(135deg,#6e4b30,#24141c,#9c7945);
+  box-shadow: 0 12px 30px #0008;
+  overflow: hidden;
+}
+
+.photo img {
+  width: 100%;
+  display: block;
+  max-height: 390px;
+  object-fit: cover;
+  border-radius: 11px;
+}
+
+.photo.wide {
+  width: 100%;
+  max-width: 420px;
+}
+
+.photo.wide img {
+  max-height: 260px;
+}
+
+.photo-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-width: 480px;
+  margin: 20px auto;
+}
+
+.photo-row .photo {
+  width: 100%;
+  margin: 0;
+}
+
+.photo-row img {
+  height: 220px;
+}
+
+.photo img:not([src]),
+.photo img[src=""],
+.photo img[src^="PHOTO_LINK"] {
+  display: none;
+}
+
+.photo:has(img[src^="PHOTO_LINK"]),
+.photo:has(img[src=""]) {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+}
+
+.photo:has(img[src^="PHOTO_LINK"])::after,
+.photo:has(img[src=""])::after {
+  content: "✧ ADD NIMRA'S PHOTO ✧";
+  color: var(--gold);
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 40px 5px;
+}
+
+.photo-row .photo:has(img[src^="PHOTO_LINK"]),
+.photo-row .photo:has(img[src=""]) {
+  min-height: 150px;
+}
+
+.poetry {
+  padding: 18px 12px;
+  margin: 20px 0;
+  border-top: 1px solid #d8b77944;
+  border-bottom: 1px solid #d8b77944;
+}
+
+.poetry .urdu {
+  color: var(--cream);
+  font-size: 19px;
+  line-height: 2.6;
+}
+
+button {
+  border: 1px solid var(--gold);
+  border-radius: 40px;
+  padding: 13px 26px;
+  margin: 22px 5px 0;
+  background: linear-gradient(120deg,#70502f,#ae8749);
+  color: white;
+  font-family: Poppins,sans-serif;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 20px #d8b77944;
+}
+
+.back {
+  background: transparent;
+  color: var(--gold);
+}
+
+.heart {
+  font-size: 27px;
+  margin: 15px;
+  color: var(--gold);
+}
+
+.signature {
+  font-family: "Playfair Display",serif;
+  font-style: italic;
+  color: var(--gold);
+  font-size: 18px;
+  margin-top: 25px;
+}
+
+.footer {
+  color: #a9958f;
+  font-size: 9px;
+  letter-spacing: 2px;
+  margin-top: 27px;
+}
+
+@media(max-width:450px) {
+  .card { padding: 34px 17px; }
+  .urdu { font-size: 15px; line-height: 2.5; }
+  .urdu.small { font-size: 14px; }
+  .photo-row { gap: 8px; }
+  .photo-row img { height: 170px; }
+  button { padding: 12px 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="stars"></div>
+
+<!-- PAGE 1: INTRODUCTION -->
+<section class="page active" id="page1">
+<div class="card">
+
+  <div class="kicker">A Special Gift • 26 November</div>
+
+  <div class="ornament">✧ ❀ ✧</div>
+
+  <p class="urdu">ایک چھوٹی سی دنیا، صرف تمہارے لیے</p>
+
+  <h1>Nimra <span class="gold">Tabassum</span></h1>
+
+  <div class="divider"></div>
+
+  <!-- PHOTO 1: MAIN PHOTO -->
+  <div class="photo">
+    <img src="PHOTO_LINK_1" alt="Nimra">
+  </div>
+
+  <p class="urdu">
+    سوچا اس بار تمہیں صرف ایک عام سا میسج نہ بھیجوں،
+    بلکہ کچھ ایسا بناؤں جس میں چند اچھی باتیں،
+    کچھ دعائیں اور ہماری دوستی کے خوبصورت احساسات ہوں۔
+  </p>
+
+  <p class="english">
+    A little gift, with a lot of sincere feelings.
+  </p>
+
+  <div class="heart">♡</div>
+
+  <button onclick="showPage(2)">OPEN YOUR GIFT ✨</button>
+
+  <div class="footer">MADE ESPECIALLY FOR NIMRA</div>
+</div>
+</section>
+
+
+<!-- PAGE 2: HEART TO HEART -->
+<section class="page" id="page2">
+<div class="card">
+
+  <div class="kicker">A Conversation From The Heart</div>
+
+  <h2>ایک بات کہنی تھی... ❤️</h2>
+
+  <!-- PHOTO 2 AND 3 -->
+  <div class="photo-row">
+    <div class="photo">
+      <img src="PHOTO_LINK_2" alt="Nimra memory 2">
+    </div>
+    <div class="photo">
+      <img src="PHOTO_LINK_3" alt="Nimra memory 3">
+    </div>
+  </div>
+
+  <p class="urdu">
+    نمرا! پتا ہے، میں کبھی کبھی سوچتا ہوں کہ زندگی میں
+    کتنے ہی لوگ ملتے ہیں، کتنے ہی لوگوں سے بات ہوتی ہے،
+    لیکن ہر کوئی دل میں اپنی جگہ نہیں بنا پاتا۔
+  </p>
+
+  <p class="urdu">
+    تمہاری دوستی میرے لیے انہی خوبصورت رشتوں میں سے ایک ہے۔
+    تم سے بات ہو جائے تو اچھا لگتا ہے،
+    تم خوش ہو تو دل سے خوشی ہوتی ہے،
+    اور جب تم اپنی کوئی بات شیئر کرتی ہو
+    تو مجھے اچھا لگتا ہے کہ تم نے مجھے اپنا سمجھا۔
+  </p>
+
+  <p class="urdu">
+    میں یہ نہیں کہتا کہ ہر دن ایک جیسا ہوگا،
+    لیکن میری خواہش ہے کہ ہماری دوستی میں
+    ہمیشہ وہی خلوص اور اپنائیت قائم رہے۔
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="english">
+    Good friendships are not about perfect days,
+    they are about genuine feelings and respect.
+  </p>
+
+  <div class="signature">A little note from your friend ♡</div>
+
+  <button class="back" onclick="showPage(1)">BACK</button>
+  <button onclick="showPage(3)">NEXT PAGE ✨</button>
+</div>
+</section>
+
+
+<!-- PAGE 3: FRIENDSHIP POETRY -->
+<section class="page" id="page3">
+<div class="card">
+
+  <div class="kicker">A Few Lines For You</div>
+
+  <h2>دوستی کے نام... ✨</h2>
+
+  <!-- PHOTO 4 -->
+  <div class="photo wide">
+    <img src="PHOTO_LINK_4" alt="Nimra">
+  </div>
+
+  <div class="poetry">
+    <p class="urdu">
+      کچھ رشتے نام کے محتاج نہیں ہوتے،
+      کچھ لوگ عام سے ہو کر بھی عام نہیں ہوتے۔
+    </p>
+
+    <p class="urdu">
+      زندگی کی بھیڑ میں ملتے ہیں ہزاروں چہرے،
+      مگر کچھ لوگ کبھی دل سے جدا نہیں ہوتے۔
+    </p>
+  </div>
+
+  <p class="urdu">
+    اور نمرا! میری نظر میں دوستی کی خوبصورتی یہی ہے
+    کہ اس میں بنا کسی دکھاوے کے ایک دوسرے کی قدر ہو،
+    ایک دوسرے کے لیے اچھے جذبات ہوں
+    اور دل میں ہمیشہ عزت قائم رہے۔
+  </p>
+
+  <p class="urdu">
+    تم ہمیشہ ہنستی مسکراتی رہو،
+    اپنے خواب پورے کرو اور زندگی میں بہت آگے بڑھو۔
+    میری طرف سے تمہارے لیے ہمیشہ اچھی دعائیں ہیں۔
+  </p>
+
+  <div class="heart">❀ ♡ ❀</div>
+
+  <button class="back" onclick="showPage(2)">BACK</button>
+  <button onclick="showPage(4)">MY PRAYERS 🤲</button>
+</div>
+</section>
+
+
+<!-- PAGE 4: PRAYERS -->
+<section class="page" id="page4">
+<div class="card">
+
+  <div class="kicker">A Prayer For Your Beautiful Life</div>
+
+  <h2>چند دعائیں تمہارے لیے 🤲</h2>
+
+  <div class="ornament">✧ ❀ ✧</div>
+
+  <p class="urdu">
+    میں دعا کرتا ہوں کہ اللہ تمہیں ہمیشہ خوش رکھے،
+    تمہارے چہرے کی مسکراہٹ کبھی کم نہ ہو
+    اور تمہارے دل کو ہمیشہ سکون عطا فرمائے۔
+  </p>
+
+  <p class="urdu">
+    تمہاری ہر جائز خواہش پوری ہو،
+    تمہارے ہر اچھے خواب کو تعبیر ملے،
+    تمہیں زندگی کے ہر میدان میں کامیابی نصیب ہو۔
+  </p>
+
+  <p class="urdu">
+    اللہ تمہارے والدین کو صحت و سلامتی عطا فرمائے،
+    ان کا سایہ ہمیشہ تمہارے سر پر قائم رکھے
+    اور تمہارے گھر کو خوشیوں سے آباد رکھے۔
+  </p>
+
+  <p class="urdu">
+    زندگی کے کسی بھی موڑ پر کوئی مشکل آئے
+    تو اللہ تمہارے لیے آسانیاں پیدا فرمائے۔
+    تمہیں دنیا و آخرت کی بھلائیاں نصیب ہوں۔
+    آمین یا رب العالمین۔
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="english">
+    May your days be filled with peace,
+    happiness and endless blessings.
+  </p>
+
+  <button class="back" onclick="showPage(3)">BACK</button>
+  <button onclick="showPage(5)">FINAL SURPRISE 🎂</button>
+</div>
+</section>
+
+
+<!-- PAGE 5: BIRTHDAY FINALE -->
+<section class="page" id="page5">
+<div class="card">
+
+  <div class="kicker">Today Is All About You</div>
+
+  <div class="ornament">✧ ✦ ✧</div>
+
+  <p class="urdu">بہت بہت سالگرہ مبارک ہو!</p>
+
+  <h1>Happy <span class="gold">Birthday</span></h1>
+
+  <h2>Nimra Tabassum</h2>
+
+  <div class="heart">🎂</div>
+
+  <div class="divider"></div>
+
+  <p class="urdu">
+    نمرا! آج تمہارا خاص دن ہے،
+    اور میں چاہتا ہوں کہ تمہاری زندگی کا یہ نیا سال
+    تمہارے لیے بے شمار خوشیاں لے کر آئے۔
+  </p>
+
+  <p class="urdu">
+    جو خواب تم نے دیکھے ہیں وہ پورے ہوں،
+    جن منزلوں تک پہنچنا چاہتی ہو وہاں ضرور پہنچو،
+    تمہیں اچھے لوگ ملیں اور ہر قدم پر کامیابی نصیب ہو۔
+  </p>
+
+  <p class="urdu">
+    ایک بات ہمیشہ یاد رکھنا،
+    اپنی قدر کرنا، اپنے خوابوں کو اہمیت دینا
+    اور چھوٹی چھوٹی خوشیوں کو بھی دل سے جینا۔
+  </p>
+
+  <p class="urdu">
+    ہماری دوستی بھی اسی طرح خوبصورت رہے،
+    ہنسی مذاق، اچھی باتیں اور ایک دوسرے کے لیے
+    خلوص ہمیشہ برقرار رہے۔
+  </p>
+
+  <div class="poetry">
+    <p class="urdu">
+      تمہارے حصے میں ہر خوشی آتی رہے،
+      زندگی تمہیں ہر موڑ پر مسکراتی رہے۔
+    </p>
+  </div>
+
+  <p class="english">
+    Stay happy, keep smiling and always keep shining.
+    Wishing you the very best, today and always.
+  </p>
+
+  <div class="signature">With sincere wishes & prayers ♡</div>
+
+  <p class="urdu small">
+    اللہ تمہیں ہمیشہ خوش و آباد رکھے۔ آمین!
+  </p>
+
+  <div class="footer">26 NOVEMBER • MADE WITH CARE</div>
+
+  <button onclick="celebrate()">CELEBRATE AGAIN ✨</button>
+  <button class="back" onclick="showPage(1)">START AGAIN ↺</button>
+
+</div>
+</section>
+
+
+<script>
+function showPage(number) {
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+
+  document.getElementById('page' + number).classList.add('active');
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
+// Floating golden stars
+const stars = document.getElementById('stars');
+
+for (let i = 0; i < 28; i++) {
+  const star = document.createElement('span');
+  star.className = 'star';
+  star.textContent = '✧';
+  star.style.left = Math.random() * 100 + '%';
+  star.style.top = Math.random() * 100 + '%';
+  star.style.fontSize = (10 + Math.random() * 14) + 'px';
+  star.style.animationDelay = Math.random() * 7 + 's';
+  stars.appendChild(star);
+}
+
+// Birthday celebration
+function celebrate() {
+  const symbols = ['✦','♡','❀','✨','♥'];
+
+  for (let i = 0; i < 45; i++) {
+    const item = document.createElement('span');
+
+    item.textContent = symbols[
+      Math.floor(Math.random() * symbols.length)
+    ];
+
+    item.style.position = 'fixed';
+    item.style.left = Math.random() * 100 + 'vw';
+    item.style.top = '-25px';
+    item.style.fontSize = (15 + Math.random() * 18) + 'px';
+    item.style.color = '#dfbd78';
+    item.style.pointerEvents = 'none';
+    item.style.zIndex = '9999';
+
+    document.body.appendChild(item);
+
+    const duration = 2500 + Math.random() * 2000;
+
+    item.animate([
+      { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+      { transform: 'translateY(110vh) rotate(500deg)', opacity: 0 }
+    ], {
+      duration: duration,
+      easing: 'ease-in'
+    });
+
+    setTimeout(() => item.remove(), duration);
+  }
+}
+</script>
+
+</body>
+  </html>
